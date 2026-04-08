@@ -173,7 +173,7 @@ export function ChatWidget() {
   )
 }
 
-/* ═══ Card ═══ */
+/* ═══ Card with Citations ═══ */
 function CardView({ card, strings, onHandoff }: { card: AnswerCard; strings: Strings; onHandoff: () => void }) {
   return (
     <div className="bm-card">
@@ -181,27 +181,24 @@ function CardView({ card, strings, onHandoff }: { card: AnswerCard; strings: Str
 
       {card.steps.length > 0 && (
         <div className="bm-card-section">
-          <div className="bm-card-label">
-            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            {strings.steps}
-          </div>
+          <div className="bm-card-label">{strings.steps}</div>
           <ol className="bm-card-steps">
             {card.steps.map((s, i) => (
               <li key={i}>
                 <span className="bm-step-num">{i + 1}</span>
-                <div>
-                  <span>{s}</span>
-                  {/* Show step illustration for first 2 steps */}
-                  {i < 2 && card.steps.length > 2 && (
-                    <div className="bm-step-img">
-                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
+                <span>
+                  {s.text}
+                  {s.refs && s.refs.map(ref => (
+                    <a
+                      key={ref}
+                      className="bm-cite"
+                      href={card.articles[ref - 1]?.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={card.articles[ref - 1]?.title || ''}
+                    >{ref}</a>
+                  ))}
+                </span>
               </li>
             ))}
           </ol>
@@ -209,13 +206,8 @@ function CardView({ card, strings, onHandoff }: { card: AnswerCard; strings: Str
       )}
 
       {card.warnings.length > 0 && (
-        <div className="bm-card-section">
-          <div className="bm-card-label">
-            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-            </svg>
-            {strings.warnings}
-          </div>
+        <div className="bm-card-section bm-card-warn-section">
+          <div className="bm-card-label">{strings.warnings}</div>
           {card.warnings.map((w, i) => (
             <div key={i} className="bm-card-warning">
               <span className="bm-warn-icon">⚠</span>
@@ -225,23 +217,15 @@ function CardView({ card, strings, onHandoff }: { card: AnswerCard; strings: Str
         </div>
       )}
 
+      {/* References list */}
       {card.articles.length > 0 && (
-        <div className="bm-card-section bm-card-articles">
-          <div className="bm-card-label">
-            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-            </svg>
-            {strings.relatedArticles}
-          </div>
+        <div className="bm-refs">
+          <div className="bm-refs-title">{strings.relatedArticles}</div>
           {card.articles.map((a, i) => (
-            <a key={i} href={a.url} target="_blank" rel="noopener noreferrer">
-              <span className="bm-article-icon">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                </svg>
-              </span>
-              {a.title}
-            </a>
+            <div key={i} className="bm-ref-item">
+              <span className="bm-ref-num">{i + 1}</span>
+              <a href={a.url} target="_blank" rel="noopener noreferrer">{a.title}</a>
+            </div>
           ))}
         </div>
       )}

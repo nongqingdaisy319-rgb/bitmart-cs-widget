@@ -1,8 +1,13 @@
+export interface RefArticle {
+  title: string
+  url: string
+}
+
 export interface AnswerCard {
   conclusion: string
-  steps: string[]
+  steps: { text: string; refs?: number[] }[]  // refs = citation indices (1-based)
   warnings: string[]
-  articles: { title: string; url: string }[]
+  articles: RefArticle[]  // ordered reference list
 }
 
 export interface Scenario {
@@ -29,11 +34,11 @@ export const scenariosEn: Scenario[] = [
     answer: {
       conclusion: 'Your withdrawal may be delayed due to blockchain network confirmation. Most withdrawals complete within 30 minutes to a few hours depending on the network.',
       steps: [
-        'Go to Assets → Withdrawal History',
-        'Find the transaction and check its status',
-        'If status shows "Completed", copy the TXID',
-        'Search the TXID on a blockchain explorer (e.g., Etherscan for ERC-20)',
-        'If still "Processing" after 6 hours, please contact human support',
+        { text: 'Go to Assets → Withdrawal History', refs: [1] },
+        { text: 'Find the transaction and check its status', refs: [1] },
+        { text: 'If status shows "Completed", copy the TXID', refs: [3] },
+        { text: 'Search the TXID on a blockchain explorer (e.g., Etherscan for ERC-20)', refs: [3] },
+        { text: 'If still "Processing" after 6 hours, please contact human support', refs: [2] },
       ],
       warnings: [
         'Make sure the withdrawal network matches the receiving address network. Mismatched networks may result in permanent loss of funds.',
@@ -52,11 +57,11 @@ export const scenariosEn: Scenario[] = [
     answer: {
       conclusion: 'Deposit delays are usually caused by insufficient blockchain confirmations. Please check the required number of confirmations for your chosen network.',
       steps: [
-        'Go to Assets → Deposit History',
-        'Check if the deposit shows in your history',
-        'If it appears with status "Confirming", wait for the required confirmations',
-        'If no record exists, verify the deposit address and network on the blockchain explorer',
-        'Ensure you deposited to the correct address and selected the correct network',
+        { text: 'Go to Assets → Deposit History', refs: [1] },
+        { text: 'Check if the deposit shows in your history', refs: [1] },
+        { text: 'If it appears with status "Confirming", wait for the required confirmations', refs: [2] },
+        { text: 'If no record exists, verify the deposit address and network on the blockchain explorer', refs: [2] },
+        { text: 'Ensure you deposited to the correct address and selected the correct network', refs: [1] },
       ],
       warnings: [
         'Depositing tokens via the wrong network (e.g., sending ERC-20 tokens to a TRC-20 address) may result in permanent loss.',
@@ -74,12 +79,12 @@ export const scenariosEn: Scenario[] = [
     answer: {
       conclusion: 'BitMart requires identity verification (KYC) for withdrawal limits above the basic tier. Most verifications are completed within 1-3 business days.',
       steps: [
-        'Go to Account → Identity Verification',
-        'Select your verification level (Level 1 or Level 2)',
-        'Prepare a valid government-issued ID (passport, national ID, or driver\'s license)',
-        'Take clear photos of the front and back of your ID',
-        'Complete the facial recognition step',
-        'Submit and wait for review (1-3 business days)',
+        { text: 'Go to Account → Identity Verification', refs: [1] },
+        { text: 'Select your verification level (Level 1 or Level 2)', refs: [1] },
+        { text: 'Prepare a valid government-issued ID (passport, national ID, or driver\'s license)', refs: [2] },
+        { text: 'Take clear photos of the front and back of your ID', refs: [2] },
+        { text: 'Complete the facial recognition step', refs: [1] },
+        { text: 'Submit and wait for review (1-3 business days)', refs: [1] },
       ],
       warnings: [
         'Photos must be clear, well-lit, and show all four corners of the document.',
@@ -98,11 +103,11 @@ export const scenariosEn: Scenario[] = [
     answer: {
       conclusion: 'Login issues are commonly caused by incorrect passwords, expired 2FA codes, or account security locks. Here\'s how to troubleshoot.',
       steps: [
-        'Verify you are using the correct email address',
-        'Try resetting your password via "Forgot Password"',
-        'If using Google Authenticator, ensure your device time is synced (Settings → Time → Auto sync)',
-        'If 2FA codes still don\'t work, you may need to reset your 2FA',
-        'For locked accounts, submit an unlock request through the security center',
+        { text: 'Verify you are using the correct email address', refs: [1] },
+        { text: 'Try resetting your password via "Forgot Password"', refs: [1] },
+        { text: 'If using Google Authenticator, ensure your device time is synced (Settings → Time → Auto sync)', refs: [2] },
+        { text: 'If 2FA codes still don\'t work, you may need to reset your 2FA', refs: [2] },
+        { text: 'For locked accounts, submit an unlock request through the security center', refs: [3] },
       ],
       warnings: [
         'Never share your password, 2FA codes, or recovery keys with anyone — BitMart staff will never ask for these.',
@@ -132,11 +137,11 @@ export const scenariosZh: Scenario[] = [
     answer: {
       conclusion: '您的提现可能因区块链网络确认延迟尚未到账。大多数提现会在 30 分钟至数小时内完成，具体取决于所选网络。',
       steps: [
-        '进入【资产】→【提现记录】',
-        '找到对应的提现记录，查看状态',
-        '如状态显示"已完成"，复制 TXID',
-        '在区块链浏览器中搜索 TXID 查看确认进度（如 ERC-20 用 Etherscan）',
-        '如超过 6 小时仍为"处理中"，请联系人工客服',
+        { text: '进入【资产】→【提现记录】', refs: [1] },
+        { text: '找到对应的提现记录，查看状态', refs: [1] },
+        { text: '如状态显示"已完成"，复制 TXID', refs: [3] },
+        { text: '在区块链浏览器中搜索 TXID 查看确认进度（如 ERC-20 用 Etherscan）', refs: [3] },
+        { text: '如超过 6 小时仍为"处理中"，请联系人工客服', refs: [2] },
       ],
       warnings: [
         '提现网络必须与收款地址网络一致，网络不匹配可能导致资产永久丢失。',
@@ -155,11 +160,11 @@ export const scenariosZh: Scenario[] = [
     answer: {
       conclusion: '充值延迟通常是因为区块链确认数不足。请检查所选网络要求的确认数，耐心等待。',
       steps: [
-        '进入【资产】→【充值记录】',
-        '检查充值是否在记录中显示',
-        '如状态为"确认中"，等待达到所需确认数',
-        '如无记录，请在区块链浏览器中验证充值地址和网络',
-        '确认您使用了正确的充值地址和正确的网络',
+        { text: '进入【资产】→【充值记录】', refs: [1] },
+        { text: '检查充值是否在记录中显示', refs: [1] },
+        { text: '如状态为"确认中"，等待达到所需确认数', refs: [2] },
+        { text: '如无记录，请在区块链浏览器中验证充值地址和网络', refs: [2] },
+        { text: '确认您使用了正确的充值地址和正确的网络', refs: [1] },
       ],
       warnings: [
         '通过错误网络充值（如将 ERC-20 代币发送到 TRC-20 地址）可能导致资产永久丢失。',
@@ -177,12 +182,12 @@ export const scenariosZh: Scenario[] = [
     answer: {
       conclusion: 'BitMart 要求完成身份认证（KYC）以提升提现额度。大多数认证会在 1-3 个工作日内完成审核。',
       steps: [
-        '进入【账户】→【身份认证】',
-        '选择认证等级（Level 1 或 Level 2）',
-        '准备有效的政府签发证件（护照、身份证或驾驶证）',
-        '拍摄证件正反面的清晰照片',
-        '完成人脸识别步骤',
-        '提交并等待审核（1-3 个工作日）',
+        { text: '进入【账户】→【身份认证】', refs: [1] },
+        { text: '选择认证等级（Level 1 或 Level 2）', refs: [1] },
+        { text: '准备有效的政府签发证件（护照、身份证或驾驶证）', refs: [2] },
+        { text: '拍摄证件正反面的清晰照片', refs: [2] },
+        { text: '完成人脸识别步骤', refs: [1] },
+        { text: '提交并等待审核（1-3 个工作日）', refs: [1] },
       ],
       warnings: [
         '照片必须清晰、光线充足，且能看到证件的四个角。',
@@ -201,11 +206,11 @@ export const scenariosZh: Scenario[] = [
     answer: {
       conclusion: '登录问题通常由密码错误、2FA 验证码过期或账户安全锁定导致。以下是排查步骤。',
       steps: [
-        '确认您使用的邮箱地址是否正确',
-        '通过"忘记密码"重置密码',
-        '如使用 Google Authenticator，确保手机时间已同步（设置→时间→自动同步）',
-        '如 2FA 验证码仍然无效，可能需要重置 2FA',
-        '账户被锁定时，请通过安全中心提交解锁申请',
+        { text: '确认您使用的邮箱地址是否正确', refs: [1] },
+        { text: '通过"忘记密码"重置密码', refs: [1] },
+        { text: '如使用 Google Authenticator，确保手机时间已同步（设置→时间→自动同步）', refs: [2] },
+        { text: '如 2FA 验证码仍然无效，可能需要重置 2FA', refs: [2] },
+        { text: '账户被锁定时，请通过安全中心提交解锁申请', refs: [3] },
       ],
       warnings: [
         '切勿将密码、2FA 验证码或恢复密钥分享给任何人——BitMart 工作人员绝不会索要这些信息。',
@@ -238,9 +243,9 @@ export function getFallbackAnswer(lang: string): AnswerCard {
     return {
       conclusion: '抱歉，我暂时无法准确回答这个问题。您可以尝试换个说法描述问题，或者直接联系人工客服获得帮助。',
       steps: [
-        '尝试使用更具体的关键词描述您的问题',
-        '浏览我们的帮助中心文章',
-        '点击下方"联系人工客服"按钮获取人工帮助',
+        { text: '尝试使用更具体的关键词描述您的问题' },
+        { text: '浏览我们的帮助中心文章', refs: [1] },
+        { text: '点击下方"联系人工客服"按钮获取人工帮助' },
       ],
       warnings: [],
       articles: [
@@ -251,9 +256,9 @@ export function getFallbackAnswer(lang: string): AnswerCard {
   return {
     conclusion: "I'm sorry, I couldn't find a specific answer to your question. You can try rephrasing, or contact our human support team for further assistance.",
     steps: [
-      'Try using more specific keywords to describe your issue',
-      'Browse our Help Center articles',
-      'Click "Talk to human support" below for personalized help',
+      { text: 'Try using more specific keywords to describe your issue' },
+      { text: 'Browse our Help Center articles', refs: [1] },
+      { text: 'Click "Talk to human support" below for personalized help' },
     ],
     warnings: [],
     articles: [
